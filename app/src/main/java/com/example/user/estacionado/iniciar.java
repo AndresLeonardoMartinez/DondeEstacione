@@ -28,7 +28,7 @@ public class iniciar extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.iniciar_layout);
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
-
+        //verificacion();
 
 
 
@@ -46,22 +46,25 @@ public class iniciar extends AppCompatActivity {
 
 
 
-        Log.d("prueba", "valor shared latitud " + latitud);
-        Log.d("prueba", "valor shared longitud " + longitud);
+//        Log.d("prueba", "valor shared latitud " + latitud);
+      //  Log.d("prueba", "valor shared longitud " + longitud);
+        Log.d("prueba", "antes del if");
         if (((latitud == 0 && longitud==0) )) //|| borrar== 1)) //no existe una ubicacion previa
         {
             Intent i;
+            Log.d("prueba", "desde Inicial voy a lanzar act1");
             i = new Intent(this,MainActivity.class);
             startActivity(i);
         }
         else //no existe ubicacion
         {
             Intent i;
-            i = new Intent (this,Main2Activity.class);
+            Log.d("prueba", "desde Inicial voy a lanzar act2");
+            i = new Intent(this, Main2Activity.class);
             i.putExtra("latitud",latitud);
             i.putExtra("longitud",longitud);
-            Log.d("prueba", "INICIAR inicia A2 con latitud" + latitud);
-            Log.d("prueba", "INICIAR inicia A2 con longitud" + longitud);
+           // Log.d("prueba", "INICIAR inicia A2 con latitud" + latitud);
+          //  Log.d("prueba", "INICIAR inicia A2 con longitud" + longitud);
             startActivity(i);
 
         }
@@ -72,7 +75,7 @@ public class iniciar extends AppCompatActivity {
 
     @Override
     protected void onRestart() {
-        verificacion();
+      //  verificacion();
         super.onRestart();
     }
 

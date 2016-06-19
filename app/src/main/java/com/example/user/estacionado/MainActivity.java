@@ -37,7 +37,9 @@ public class MainActivity extends AppCompatActivity {
 
         guardarPosicionAuto(); //invoca al metodo que invoca al metodo del servicio
         stopService(s); //termino el servicio
-        finish();
+        Log.d("prueba", "antes de matar el servicio");
+        //this.finish();
+        this.finish();
 
     }
     private ServiceConnection mConnection = new ServiceConnection() {

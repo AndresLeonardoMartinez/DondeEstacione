@@ -46,6 +46,7 @@ public class Main2Activity extends AppCompatActivity implements botones.OnFragme
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.mapa);
         mapFragment.getMapAsync(this);
+        //metodoInicial();
     }
     private void metodoInicial(){
         Intent i = getIntent();
@@ -83,7 +84,7 @@ public class Main2Activity extends AppCompatActivity implements botones.OnFragme
 
     @Override
     protected void onRestart() {
-        metodoInicial();
+        //metodoInicial();
         super.onRestart();
     }
 
@@ -112,7 +113,7 @@ public class Main2Activity extends AppCompatActivity implements botones.OnFragme
 
         editor.clear();
         editor.commit();
-        finish();
+        this.finish();
         //vuelvo a I
 
     }
