@@ -31,29 +31,26 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences sharedpreferences;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         EnableGPSIfPossible();
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
-
         //creamos el servicio
-         s = new Intent(this,MyService.class);
+        s = new Intent(this,MyService.class);
         startService(s);
         //nos bindeamos al servicio para acceder al metodo que nos provee la ubicacion
         bindService(s, mConnection, Context.BIND_AUTO_CREATE);
     }
     public void guardar(View view){
-
-        guardarPosicionAuto(); //invoca al metodo que invoca al metodo del servicio
+        boolean resu=guardarPosicionAuto(); //invoca al metodo que invoca al metodo del servicio
         stopService(s); //termino el servicio
         Log.d("prueba", "MainActivity.guardar() antes de matar el servicio");
         //this.finish();
-        this.finish();
-
+        if(resu)
+            this.finish();
     }
     private ServiceConnection mConnection = new ServiceConnection() {
-
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             // We've bound to LocalService, cast the IBinder and get
@@ -68,10 +65,9 @@ public class MainActivity extends AppCompatActivity {
         public void onServiceDisconnected(ComponentName arg0) {
         }
     };
-    private void guardarPosicionAuto (){
+    private boolean guardarPosicionAuto (){
         posicion = mService.mostrar();
         SharedPreferences.Editor editor = sharedpreferences.edit();
-
         //guardamos la posicion mediante shared preferences
         if (posicion != null && !(posicion.latitude==0 && posicion.longitude==0)){
             editor.clear(); //limpio lo viejo
@@ -82,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
             editor.putString(ubicacionLatitud,latitud+"");
             editor.putString(ubicacionLongitud, longitud + "");
             editor.commit();
+            return true;
         }else{
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("No se percibe señal. Reintentar")
@@ -98,13 +95,21 @@ public class MainActivity extends AppCompatActivity {
             editor.putString(ubicacionLongitud, "0");
             editor.commit();
             Log.d("prueba", "MainActivity.guardarPosicionAuto(): shared preferences 0 0");
+            return false;
         }
     }
 
     protected void onResume(){
+        //EnableGPSIfPossible();
         super.onResume();
-        EnableGPSIfPossible();
     }
+
+    protected void onRestart(){
+        EnableGPSIfPossible();
+        super.onRestart();
+    }
+
+
 
 
     private void EnableGPSIfPossible(){

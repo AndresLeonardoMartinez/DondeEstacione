@@ -60,9 +60,6 @@ public class iniciar extends AppCompatActivity {
             startActivity(i);
 
         }
-
-
-
     }
 
     @Override

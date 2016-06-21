@@ -19,13 +19,11 @@ import com.google.android.gms.maps.model.LatLng;
 
 
 public class MyService extends Service {
-
     private final IBinder mBinder = new LocalBinder();
     private LocationManager locationManager;
     private String locationProvider;
     private LatLng latlong;
     private MainActivity MA;
-
 
     public class LocalBinder extends Binder {
         MyService getService() {
@@ -34,22 +32,16 @@ public class MyService extends Service {
             return MyService.this;
         }
     }
-
-
     public MyService(){}
-
     @Override
     public IBinder onBind(Intent intent) {
         return mBinder;
     }
-
     @Override
     public void onCreate() {
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-
         Log.d("prueba", "Servicio creado...");
     }
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d("prueba", "MyService.onStartCommand(): Servicio iniciado...");
@@ -98,25 +90,18 @@ public class MyService extends Service {
     }
 
     @Override
-    public void onDestroy() {
-
+    public void onDestroy(){
         Log.d("prueba", "MyService.onDestroy(): Servicio destruido...");
     }
 
     public LatLng mostrar(){
-
-        if (latlong  != null)
-        {
+        if (latlong  != null){
             Log.d("prueba", "MyService.mostrar(): "+latlong.toString()+" ");
             return latlong;
         }
-        else
-        {
-
+        else{
             Log.d("prueba","MyService.mostrar(): NULO");
             return new LatLng(0,0);
         }
     }
-    
-
 }

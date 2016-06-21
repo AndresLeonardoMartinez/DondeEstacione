@@ -79,52 +79,41 @@ public class Main2Activity extends AppCompatActivity implements botones.OnFragme
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
-
         }
     };
 
     @Override
     protected void onResume() {
-       EnableGPSIfPossible();
         metodoInicial();
         super.onResume();
     }
 
     @Override
     protected void onRestart() {
-  //      EnableGPSIfPossible();
         //metodoInicial();
         super.onRestart();
+        EnableGPSIfPossible();
     }
 
     @Override public void mostrarPosicion() {
         //obtenemos posicion actual
         //preguntamos por gps
         LatLng miPosicion = mService.mostrar();
-
-
         if (mService != null) {
             //agregamos las dos marcas
             mMap.addMarker(new MarkerOptions().position(miPosicion).title("Ud esta aquí"));
             mMap.addMarker(new MarkerOptions().position(posicion).title("Su vehículo"));
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posicion,12));
-
             //aca seria deseable calcular la ruta
-
-
-
         }
     }
-
     @Override
     public void NuevaPosicion() {
         SharedPreferences.Editor editor = sharedpreferences.edit();
-
         editor.clear();
         editor.commit();
         this.finish();
         //vuelvo a I
-
     }
 
     @Override
@@ -133,7 +122,6 @@ public class Main2Activity extends AppCompatActivity implements botones.OnFragme
         mMap = googleMap;
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(BahiaBlanca,12));
     }
-
 
     private void EnableGPSIfPossible(){
         final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
