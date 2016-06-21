@@ -29,37 +29,29 @@ public class iniciar extends AppCompatActivity {
         setContentView(R.layout.iniciar_layout);
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         //verificacion();
-
-
-
     }
     private void verificacion () {
-
         //verificar si el gps esta activado
         //verificar si existe posicion
-
         //prueba
         double latitud;
         double longitud;
         latitud = Double.parseDouble(sharedpreferences.getString(ubicacionLatitud,"0"));
         longitud = Double.parseDouble(sharedpreferences.getString(ubicacionLongitud, "0"));
-
-
-
 //        Log.d("prueba", "valor shared latitud " + latitud);
       //  Log.d("prueba", "valor shared longitud " + longitud);
-        Log.d("prueba", "antes del if");
+        Log.d("prueba", "iniciar.verificacion(): antes del if");
         if (((latitud == 0 && longitud==0) )) //|| borrar== 1)) //no existe una ubicacion previa
         {
             Intent i;
-            Log.d("prueba", "desde Inicial voy a lanzar act1");
+            Log.d("prueba", "iniciar.verificacion(): desde Inicial voy a lanzar act1");
             i = new Intent(this,MainActivity.class);
             startActivity(i);
         }
-        else //no existe ubicacion
+        else //existe ubicacion
         {
             Intent i;
-            Log.d("prueba", "desde Inicial voy a lanzar act2");
+            Log.d("prueba", "iniciar.verificacion(): desde Inicial voy a lanzar act2");
             i = new Intent(this, Main2Activity.class);
             i.putExtra("latitud",latitud);
             i.putExtra("longitud",longitud);
@@ -68,9 +60,6 @@ public class iniciar extends AppCompatActivity {
             startActivity(i);
 
         }
-
-
-
     }
 
     @Override

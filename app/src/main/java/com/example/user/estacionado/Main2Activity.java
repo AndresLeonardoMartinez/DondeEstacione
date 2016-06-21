@@ -2,12 +2,17 @@ package com.example.user.estacionado;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
+import android.location.LocationManager;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -40,7 +45,9 @@ public class Main2Activity extends AppCompatActivity implements botones.OnFragme
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EnableGPSIfPossible();
         setContentView(R.layout.layout_fragmento_actividad2);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         //mapa
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -53,8 +60,8 @@ public class Main2Activity extends AppCompatActivity implements botones.OnFragme
         double lat = i.getDoubleExtra("latitud",0);
         double longi= i.getDoubleExtra("longitud",0);
         posicion = new LatLng(lat,longi);
-        Log.d("prueba", "A2 intent lat: "+lat);
-        Log.d("prueba", "A2 intent longi: " + longi);
+        Log.d("prueba", "A2.metodoInicial(): intent lat: "+lat);
+        Log.d("prueba", "A2.metodoInicial(): intent longi: " + longi);
         //creo y me bindeo para acceder al metodo mostrar del servicio
         s = new Intent(this,MyService.class);
         startService(s);
@@ -72,7 +79,6 @@ public class Main2Activity extends AppCompatActivity implements botones.OnFragme
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
-
         }
     };
 
@@ -86,36 +92,28 @@ public class Main2Activity extends AppCompatActivity implements botones.OnFragme
     protected void onRestart() {
         //metodoInicial();
         super.onRestart();
+        EnableGPSIfPossible();
     }
 
     @Override public void mostrarPosicion() {
         //obtenemos posicion actual
         //preguntamos por gps
         LatLng miPosicion = mService.mostrar();
-
-
         if (mService != null) {
             //agregamos las dos marcas
             mMap.addMarker(new MarkerOptions().position(miPosicion).title("Ud esta aquí"));
             mMap.addMarker(new MarkerOptions().position(posicion).title("Su vehículo"));
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posicion,12));
-
             //aca seria deseable calcular la ruta
-
-
-
         }
     }
-
     @Override
     public void NuevaPosicion() {
         SharedPreferences.Editor editor = sharedpreferences.edit();
-
         editor.clear();
         editor.commit();
         this.finish();
         //vuelvo a I
-
     }
 
     @Override
@@ -125,5 +123,28 @@ public class Main2Activity extends AppCompatActivity implements botones.OnFragme
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(BahiaBlanca,12));
     }
 
+    private void EnableGPSIfPossible(){
+        final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
+        if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
+            buildAlertMessageNoGps();
+        }
+    }
 
+    private  void buildAlertMessageNoGps() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Es necesario tener activado el GPS para usar la aplicación. ¿Desea activarlo?")
+                .setCancelable(false)
+                .setPositiveButton("Sí", new DialogInterface.OnClickListener() {
+                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        dialog.cancel();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
+    }
 }
