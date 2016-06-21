@@ -22,5 +22,7 @@
         android:enabled="false"
         android:onClick="guardar"
         android:id="@+id/botonGuardar"
+        android:background="@color/wallet_holo_blue_light"
+
         />
 </LinearLayout>

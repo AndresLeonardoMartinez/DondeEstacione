@@ -24,6 +24,7 @@ public class MyService extends Service {
     private LocationManager locationManager;
     private String locationProvider;
     private LatLng latlong;
+    private MainActivity MA;
 
 
     public class LocalBinder extends Binder {
@@ -35,8 +36,7 @@ public class MyService extends Service {
     }
 
 
-    public MyService() {
-    }
+    public MyService(){}
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -52,7 +52,7 @@ public class MyService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d("prueba", "Servicio iniciado...");
+        Log.d("prueba", "MyService.onStartCommand(): Servicio iniciado...");
         Criteria criteria = new Criteria();
         criteria.setAccuracy(Criteria.ACCURACY_FINE);
         criteria.setPowerRequirement(Criteria.POWER_HIGH);
@@ -61,13 +61,8 @@ public class MyService extends Service {
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
                 // makeUseOfNewLocation(location);
-
-
                 latlong=new LatLng(location.getLatitude(),location.getLongitude());
-
-                Log.d("prueba", "onLocationChanged: "+latlong.toString());
-
-
+                Log.d("prueba", "MyService.onLocationChanged: "+latlong.toString());
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -105,19 +100,20 @@ public class MyService extends Service {
     @Override
     public void onDestroy() {
 
-        Log.d("prueba", "Servicio destruido...");
+        Log.d("prueba", "MyService.onDestroy(): Servicio destruido...");
     }
 
     public LatLng mostrar(){
 
         if (latlong  != null)
         {
-            Log.d("prueba", latlong.toString()+" ");
+            Log.d("prueba", "MyService.mostrar(): "+latlong.toString()+" ");
             return latlong;
         }
         else
         {
-            Log.d("prueba","NULO");
+
+            Log.d("prueba","MyService.mostrar(): NULO");
             return new LatLng(0,0);
         }
     }
