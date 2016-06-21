@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.LocationManager;
 import android.os.IBinder;
 import android.provider.Settings;
@@ -30,6 +32,10 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
+
+import java.io.IOException;
+import java.util.List;
 
 import fragmentos.botones;
 
@@ -100,9 +106,29 @@ public class Main2Activity extends AppCompatActivity implements botones.OnFragme
         //preguntamos por gps
         LatLng miPosicion = mService.mostrar();
         if (mService != null) {
+
+            Geocoder geocoder = new Geocoder(this);
+            double latitude = miPosicion.latitude;
+            double longitude = miPosicion.longitude;
+            List<Address> addresses;
+            String addressText="";
+            try {
+                addresses = geocoder.getFromLocation(latitude, longitude,1);
+                if(addresses != null && addresses.size() > 0 ){
+                    Address address = addresses.get(0);
+                    addressText = String.format("%s",
+                            address.getMaxAddressLineIndex() > 0 ? address.getAddressLine(0) : "");
+                }
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+            Log.i("prueba", "addressText "+addressText);
+            mMap.setContentDescription(addressText);
+
             //agregamos las dos marcas
             mMap.addMarker(new MarkerOptions().position(miPosicion).title("Ud esta aquí"));
-            mMap.addMarker(new MarkerOptions().position(posicion).title("Su vehículo"));
+            mMap.addMarker(new MarkerOptions().position(posicion).title("Su vehículo: "+addressText));
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posicion,12));
             //aca seria deseable calcular la ruta
         }
