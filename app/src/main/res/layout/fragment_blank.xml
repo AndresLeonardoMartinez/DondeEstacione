@@ -13,13 +13,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="mostrar Posicion"
-        android:id="@+id/mostrarPos"
-        />
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Nueva Posición"
+        android:text="Nuevo Estacionamiento"
         android:id="@+id/nuevaPos"
         />
 </LinearLayout>

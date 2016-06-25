@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <fragment android:name="fragmentos.botones"
+    <fragment android:name="com.example.user.estacionado.botonesFragment"
         android:id="@+id/botones"
         android:layout_weight="6"
         android:layout_width="match_parent"
