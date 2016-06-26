@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.LocationManager;
@@ -18,27 +19,45 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.akexorcist.googledirection.util.DirectionConverter;
+import com.akexorcist.googledirection.constant.TransportMode;
+import com.akexorcist.googledirection.model.Direction;
+import com.akexorcist.googledirection.model.Leg;
+import com.akexorcist.googledirection.model.Route;
+import com.akexorcist.googledirection.DirectionCallback;
+import com.akexorcist.googledirection.GoogleDirection;
+import com.akexorcist.googledirection.constant.RequestResult;
+
 
 import java.io.IOException;
 import java.util.List;
+import java.util.ArrayList;
+
 
 import com.example.user.estacionado.botonesFragment;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 public class mapaAutoActivity extends AppCompatActivity implements botonesFragment.OnFragmentInteractionListener, OnMapReadyCallback {
+    private PolylineOptions recorrido;
+    ArrayList lista_ruta = new ArrayList();
     private GoogleMap mMap;
     SharedPreferences sharedpreferences;
     private Intent s;
     private Fragment F;
     private PosicionGPSService mService;
     private LatLng posicion;
-    private Marker miPosicion;
+    private Marker MarcadorPosicionUsuario;
     public static final String MyPREFERENCES = "MyPrefs" ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,8 +133,11 @@ public class mapaAutoActivity extends AppCompatActivity implements botonesFragme
             e.printStackTrace();
         }
         Log.i("prueba", "addressText " + addressText);
-        //miPosicion=
-                mMap.addMarker(new MarkerOptions().position(posicion).title("Su vehículo: " + addressText));
+        mMap.addMarker(new MarkerOptions()
+                        .position(posicion).
+                                title("Su vehículo: " + addressText)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.auto_icono))
+        );
 
 
     }
@@ -145,15 +167,15 @@ public class mapaAutoActivity extends AppCompatActivity implements botonesFragme
                     e.printStackTrace();
                 }
                 Log.i("prueba", "addressText " + addressText);
-                //mMap.setContentDescription(addressText);
+                //eliminamos la marca anterior para actualizar la pos del usuario
+                if ( MarcadorPosicionUsuario!= null ) {
+                    MarcadorPosicionUsuario.remove();
+                }
 
-                mMap.addMarker(new MarkerOptions().position(miPosicion).title("Ud esta aquí"));
+                MarcadorPosicionUsuario=mMap.addMarker(new MarkerOptions().position(miPosicion).title("Ud esta aquí"));
+                // Llama a la función que calculará la ruta
+                obtenerRuta(miPosicion, posicion);
 
-                //mMap.addMarker(new MarkerOptions().position(posicion).title("Su vehículo: "+addressText));
-                //if (veces==0)
-                //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(miPosicion,12));
-                //aca seria deseable calcular la ruta
-                //veces++;
             }
         }
         else
@@ -173,7 +195,7 @@ public class mapaAutoActivity extends AppCompatActivity implements botonesFragme
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        LatLng BahiaBlanca = new LatLng(-38.7167,-62.2833);
+        LatLng BahiaBlanca = new LatLng(-38.7167, -62.2833);
         mMap = googleMap;
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(BahiaBlanca,12));
         MostrarPosicionAuto();
@@ -204,6 +226,54 @@ public class mapaAutoActivity extends AppCompatActivity implements botonesFragme
                 });
         final AlertDialog alert = builder.create();
         alert.show();
+    }
+    private DirectionCallback retorno_obtener_ruta = new DirectionCallback()
+    {
+        @Override
+        public void onDirectionSuccess(Direction direction, String rawBody) {
+            Log.d("DIRECTION!", "Volvio con exito.");
+            String status = direction.getStatus();
+            if(status.equals(RequestResult.OK)) {
+                Log.d("DIRECTION!", "Ruta OK.");
+
+                Route route = direction.getRouteList().get(0);
+                Leg leg = route.getLegList().get(0);
+
+                lista_ruta = leg.getSectionPoint();
+
+                ///Ruta:
+                recorrido = new PolylineOptions();
+                recorrido.color(Color.RED);
+
+                recorrido.addAll(lista_ruta);
+
+                mMap.addPolyline(recorrido);
+            }
+            else {
+                Log.d("DIRECTION!", status);
+
+
+            }
+        }
+
+        @Override
+        public void onDirectionFailure(Throwable t) {
+
+            Log.d("DIRECTION!", "Volvio fallando");
+        }
+    };
+
+    private ArrayList obtenerRuta(LatLng inicio, LatLng destino) {
+
+        ArrayList lista_ruta = new ArrayList();
+        String serverKey = getString(R.string.google_maps_direction_server_key);
+        GoogleDirection.withServerKey(serverKey)
+                .from(inicio)
+                .to(destino)
+                .transportMode(TransportMode.WALKING)
+                .execute(retorno_obtener_ruta);
+
+        return lista_ruta;
     }
 
 }

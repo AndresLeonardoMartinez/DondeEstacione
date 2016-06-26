@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="google_maps_direction_server_key" templateMergeStrategy="preserve" translatable="false">
+        AIzaSyAnw1VzRKmvHUmPAg64OBCmxvV1p7ggQkI
+
+
+    </string>
+</resources>
