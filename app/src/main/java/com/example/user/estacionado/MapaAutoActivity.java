@@ -154,8 +154,8 @@ public class MapaAutoActivity extends AppCompatActivity implements BotonesFragme
             {
 
                 // DEBUG:
-                posicionAuto = new LatLng(-38.718318, -62.266348);
-                posicionUsuarioActual = new LatLng(-38.716598, -62.255606);
+                //posicionAuto = new LatLng(-38.718318, -62.266348);
+                //posicionUsuarioActual = new LatLng(-38.716598, -62.255606);
 
                 List<Address> addresses;
                 String addressText="";

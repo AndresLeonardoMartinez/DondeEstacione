@@ -102,8 +102,8 @@ public class PosicionGPSService extends Service {
         else{
             Log.d("prueba","MyService.mostrar(): NULO");
 
-            return new LatLng(-38.718318, -62.266348);
-            //return new LatLng(0,0);
+            //return new LatLng(-38.718318, -62.266348);
+            return new LatLng(0,0);
         }
     }
 }
