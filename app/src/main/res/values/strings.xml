@@ -6,4 +6,23 @@
 
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_iniciar">iniciar</string>
+
+    <string name="nuevoEstacionamientoBoton">Nuevo Estacionamiento</string>
+
+    <!-- -->
+    <string name="posicionUsuario">Ud esta aquí</string>
+    <string name="posicionActual">Su vehículo: </string>
+
+    <!-- guardarPosicionAutoActiviy Strings: -->
+    <string name="guardarPosicionTituloTextView">¿Donde estacioné mi auto?</string>
+    <string name="guardarPosicionBoton">Guardar Ubicación</string>
+    <string name="guardarPosicionAlertaNoSignalMsg">No se percibe señal. Reintentar</string>
+    <string name="guardarPosicionAlertaMsgBtnAceptar">"Aceptar"</string>
+
+    <!-- NO GPS Strings: -->
+    <string name="AlertaNoGPSMsg">Es necesario tener activado el GPS para usar la aplicación. ¿Desea activarlo?</string>
+    <string name="AlertaNoGPSBtnSi">Si</string>
+    <string name="AlertaNoGPSBtnNo">No</string>
+
+
 </resources>

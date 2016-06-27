@@ -10,18 +10,18 @@ import com.example.android.multidex.estacionado.R;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class botonesFragment extends Fragment {
+public class BotonesFragment extends Fragment {
     private View v;
     private OnFragmentInteractionListener mListener;
     private Timer timer;
 
-    public botonesFragment() {
+    public BotonesFragment() {
         // Required empty public constructor
     }
 
 
-    public static botonesFragment newInstance(String param1, String param2) {
-        botonesFragment fragment = new botonesFragment();
+    public static BotonesFragment newInstance(String param1, String param2) {
+        BotonesFragment fragment = new BotonesFragment();
         Bundle args = new Bundle();
         return fragment;
     }

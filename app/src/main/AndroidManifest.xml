@@ -18,10 +18,10 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name="com.example.user.estacionado.mapaAutoActivity"
+        <activity android:name="com.example.user.estacionado.MapaAutoActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"/>
-        <activity android:name="com.example.user.estacionado.guardarPosicionAutoActivity"
+        <activity android:name="com.example.user.estacionado.GuardarPosicionAutoActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"/>
 
@@ -30,7 +30,7 @@
             android:enabled="true"
             android:exported="false" />
 
-        <activity android:name="com.example.user.estacionado.iniciarActivity">
+        <activity android:name="com.example.user.estacionado.IniciarActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

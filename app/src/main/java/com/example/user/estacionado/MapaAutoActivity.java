@@ -30,8 +30,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.akexorcist.googledirection.util.DirectionConverter;
 import com.akexorcist.googledirection.constant.TransportMode;
 import com.akexorcist.googledirection.model.Direction;
 import com.akexorcist.googledirection.model.Leg;
@@ -47,11 +45,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 
-
-import com.example.user.estacionado.botonesFragment;
-import com.google.android.gms.maps.model.PolylineOptions;
-
-public class mapaAutoActivity extends AppCompatActivity implements botonesFragment.OnFragmentInteractionListener, OnMapReadyCallback {
+public class MapaAutoActivity extends AppCompatActivity implements BotonesFragment.OnFragmentInteractionListener, OnMapReadyCallback {
     private PolylineOptions recorrido;
     ArrayList lista_ruta = new ArrayList();
     private GoogleMap mMap;
@@ -60,7 +54,7 @@ public class mapaAutoActivity extends AppCompatActivity implements botonesFragme
     private Fragment F;
     private PosicionGPSService mService;
     private LatLng posicionAuto;
-    private Marker MarcadorPosicionUsuario;
+    private Marker marcadorPosicionUsuario;
     private Polyline ruta;
     public static final String MyPREFERENCES = "MyPrefs" ;
     @Override
@@ -139,7 +133,7 @@ public class mapaAutoActivity extends AppCompatActivity implements botonesFragme
         Log.i("prueba", "addressText " + addressText);
         mMap.addMarker(new MarkerOptions()
                         .position(posicionAuto).
-                                title("Su vehículo: " + addressText)
+                                title(getString(R.string.posicionActual) + addressText)
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.auto_icono))
         );
 
@@ -150,6 +144,7 @@ public class mapaAutoActivity extends AppCompatActivity implements botonesFragme
         //obtenemos posicion actual
         //preguntamos por gps
 
+
         if (mService != null && mMap!=null) {
             LatLng posicionUsuarioActual = mService.mostrar();
             Geocoder geocoder = new Geocoder(this);
@@ -157,6 +152,11 @@ public class mapaAutoActivity extends AppCompatActivity implements botonesFragme
             double longitude = posicionUsuarioActual.longitude;
             if (!(latitude == 0 && longitude == 0))
             {
+
+                // DEBUG:
+                posicionAuto = new LatLng(-38.718318, -62.266348);
+                posicionUsuarioActual = new LatLng(-38.716598, -62.255606);
+
                 List<Address> addresses;
                 String addressText="";
                 try {
@@ -172,11 +172,11 @@ public class mapaAutoActivity extends AppCompatActivity implements botonesFragme
                 }
                 Log.i("prueba", "addressText " + addressText);
                 //eliminamos la marca anterior para actualizar la pos del usuario
-                if ( MarcadorPosicionUsuario!= null ) {
-                    MarcadorPosicionUsuario.remove();
+                if ( marcadorPosicionUsuario != null ) {
+                    marcadorPosicionUsuario.remove();
                 }
 
-                MarcadorPosicionUsuario=mMap.addMarker(new MarkerOptions().position(posicionUsuarioActual).title("Ud esta aquí"));
+                marcadorPosicionUsuario =mMap.addMarker(new MarkerOptions().position(posicionUsuarioActual).title(getString(R.string.posicionUsuario)));
                 // Llama a la función que calculará la ruta
                 obtenerRuta(posicionUsuarioActual, posicionAuto);
 
@@ -233,7 +233,7 @@ public class mapaAutoActivity extends AppCompatActivity implements botonesFragme
         final AlertDialog alert = builder.create();
         alert.show();
     }
-    private DirectionCallback retorno_obtener_ruta = new DirectionCallback()
+    private DirectionCallback retornoObtenerRuta = new DirectionCallback()
     {
         @Override
         public void onDirectionSuccess(Direction direction, String rawBody) {
@@ -273,12 +273,13 @@ public class mapaAutoActivity extends AppCompatActivity implements botonesFragme
     private ArrayList obtenerRuta(LatLng inicio, LatLng destino) {
 
         ArrayList lista_ruta = new ArrayList();
-        String serverKey = getString(R.string.google_maps_direction_server_key);
+        String serverKey;
+        serverKey = getString(R.string.google_maps_direction_server_key);
         GoogleDirection.withServerKey(serverKey)
                 .from(inicio)
                 .to(destino)
                 .transportMode(TransportMode.WALKING)
-                .execute(retorno_obtener_ruta);
+                .execute(retornoObtenerRuta);
 
         return lista_ruta;
     }

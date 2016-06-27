@@ -7,13 +7,9 @@ import android.content.SharedPreferences;
 
 import com.example.android.multidex.estacionado.R;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 
-import com.google.android.gms.maps.model.LatLng;
-
-public class iniciarActivity extends AppCompatActivity {
+public class IniciarActivity extends AppCompatActivity {
     public static final String MyPREFERENCES = "MyPrefs" ;
    // public static final String BORRADOR = "BORRADOR" ;
 
@@ -46,14 +42,14 @@ public class iniciarActivity extends AppCompatActivity {
         {
             Intent i;
             Log.d("prueba", "iniciar.verificacion(): desde Inicial voy a lanzar act1");
-            i = new Intent(this,guardarPosicionAutoActivity.class);
+            i = new Intent(this,GuardarPosicionAutoActivity.class);
             startActivity(i);
         }
         else //existe ubicacion
         {
             Intent i;
             Log.d("prueba", "iniciar.verificacion(): desde Inicial voy a lanzar act2");
-            i = new Intent(this, mapaAutoActivity.class);
+            i = new Intent(this, MapaAutoActivity.class);
             i.putExtra("latitud",latitud);
             i.putExtra("longitud",longitud);
            // Log.d("prueba", "INICIAR inicia A2 con latitud" + latitud);

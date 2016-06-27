@@ -3,7 +3,7 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
     <fragment
-        android:name="com.example.user.estacionado.botonUbicacionAutoFragment"
+        android:name="com.example.user.estacionado.BotonUbicacionAutoFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/fragmentbtnubicacionauto"

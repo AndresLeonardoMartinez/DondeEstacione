@@ -1,7 +1,6 @@
 package com.example.user.estacionado;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -9,18 +8,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.android.multidex.estacionado.R;
-import com.google.android.gms.plus.PlusOneButton;
 
-public class botonUbicacionAutoFragment extends Fragment {
+public class BotonUbicacionAutoFragment extends Fragment {
 
 
     private OnFragmentInteractionListener mListener;
 
-    public botonUbicacionAutoFragment() {
+    public BotonUbicacionAutoFragment() {
         // Required empty public constructor
     }
-    public static botonUbicacionAutoFragment newInstance(String param1, String param2) {
-        botonUbicacionAutoFragment fragment = new botonUbicacionAutoFragment();
+    public static BotonUbicacionAutoFragment newInstance(String param1, String param2) {
+        BotonUbicacionAutoFragment fragment = new BotonUbicacionAutoFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;

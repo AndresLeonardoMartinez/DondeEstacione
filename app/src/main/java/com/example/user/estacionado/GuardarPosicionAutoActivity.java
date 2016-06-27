@@ -14,13 +14,11 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
-public class guardarPosicionAutoActivity extends AppCompatActivity implements botonUbicacionAutoFragment.OnFragmentInteractionListener {
+public class GuardarPosicionAutoActivity extends AppCompatActivity implements BotonUbicacionAutoFragment.OnFragmentInteractionListener {
     private PosicionGPSService mService;
     LatLng posicion;
     public static final String MyPREFERENCES = "MyPrefs" ;
@@ -88,9 +86,9 @@ public class guardarPosicionAutoActivity extends AppCompatActivity implements bo
             return true;
         }else{
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("No se percibe señal. Reintentar")
+            builder.setMessage(getString(R.string.guardarPosicionAlertaNoSignalMsg))
                     .setCancelable(false)
-                    .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                    .setPositiveButton(getString(R.string.guardarPosicionAlertaMsgBtnAceptar), new DialogInterface.OnClickListener() {
                         public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                             dialog.cancel();
                         }
@@ -134,14 +132,14 @@ public class guardarPosicionAutoActivity extends AppCompatActivity implements bo
     }
     private  void buildAlertMessageNoGps() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Es necesario tener activado el GPS para usar la aplicación. ¿Desea activarlo?")
+        builder.setMessage(getString(R.string.AlertaNoGPSMsg))
                 .setCancelable(false)
-                .setPositiveButton("Sí", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.AlertaNoGPSBtnSi), new DialogInterface.OnClickListener() {
                     public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                         startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                     }
                 })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getString(R.string.AlertaNoGPSBtnNo), new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                         dialog.cancel();
                     }

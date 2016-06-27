@@ -5,7 +5,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -23,7 +22,7 @@ public class PosicionGPSService extends Service {
     private LocationManager locationManager;
     private String locationProvider;
     private LatLng latlong;
-    private guardarPosicionAutoActivity MA;
+    private GuardarPosicionAutoActivity MA;
 
     public class LocalBinder extends Binder {
         PosicionGPSService getService() {
@@ -102,7 +101,9 @@ public class PosicionGPSService extends Service {
         }
         else{
             Log.d("prueba","MyService.mostrar(): NULO");
-            return new LatLng(0,0);
+
+            return new LatLng(-38.718318, -62.266348);
+            //return new LatLng(0,0);
         }
     }
 }
