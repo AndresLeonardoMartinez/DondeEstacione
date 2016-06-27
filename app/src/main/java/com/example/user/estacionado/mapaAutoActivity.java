@@ -193,6 +193,7 @@ public class mapaAutoActivity extends AppCompatActivity implements botonesFragme
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.clear();
         editor.commit();
+        unbindService(mConnection);
         stopService(s);
         this.finish();
         //vuelvo a I
