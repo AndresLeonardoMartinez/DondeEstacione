@@ -28,6 +28,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.akexorcist.googledirection.util.DirectionConverter;
@@ -38,6 +39,8 @@ import com.akexorcist.googledirection.model.Route;
 import com.akexorcist.googledirection.DirectionCallback;
 import com.akexorcist.googledirection.GoogleDirection;
 import com.akexorcist.googledirection.constant.RequestResult;
+import com.example.android.multidex.estacionado.R;
+
 
 
 import java.io.IOException;
@@ -56,8 +59,9 @@ public class mapaAutoActivity extends AppCompatActivity implements botonesFragme
     private Intent s;
     private Fragment F;
     private PosicionGPSService mService;
-    private LatLng posicion;
+    private LatLng posicionAuto;
     private Marker MarcadorPosicionUsuario;
+    private Polyline ruta;
     public static final String MyPREFERENCES = "MyPrefs" ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +79,7 @@ public class mapaAutoActivity extends AppCompatActivity implements botonesFragme
         Intent i = getIntent();
         double lat = i.getDoubleExtra("latitud",0);
         double longi= i.getDoubleExtra("longitud",0);
-        posicion = new LatLng(lat,longi);
+        posicionAuto = new LatLng(lat,longi);
         //indico en el mapa la pos del auto
         //MostrarPosicionAuto();
         Log.d("prueba", "A2.metodoInicial(): intent lat: "+lat);
@@ -117,12 +121,12 @@ public class mapaAutoActivity extends AppCompatActivity implements botonesFragme
 
     public void MostrarPosicionAuto(){
         Geocoder geocoder = new Geocoder(this);
-        double latitude = posicion.latitude;
-        double longitude = posicion.longitude;
+        double latitudeAuto = posicionAuto.latitude;
+        double longitudeAuto = posicionAuto.longitude;
         List<Address> addresses;
         String addressText="";
         try {
-            addresses = geocoder.getFromLocation(latitude, longitude,1);
+            addresses = geocoder.getFromLocation(latitudeAuto, longitudeAuto,1);
             if(addresses != null && addresses.size() > 0 ){
                 Address address = addresses.get(0);
                 addressText = String.format("%s",
@@ -134,7 +138,7 @@ public class mapaAutoActivity extends AppCompatActivity implements botonesFragme
         }
         Log.i("prueba", "addressText " + addressText);
         mMap.addMarker(new MarkerOptions()
-                        .position(posicion).
+                        .position(posicionAuto).
                                 title("Su vehículo: " + addressText)
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.auto_icono))
         );
@@ -147,10 +151,10 @@ public class mapaAutoActivity extends AppCompatActivity implements botonesFragme
         //preguntamos por gps
 
         if (mService != null && mMap!=null) {
-            LatLng miPosicion = mService.mostrar();
+            LatLng posicionUsuarioActual = mService.mostrar();
             Geocoder geocoder = new Geocoder(this);
-            double latitude = miPosicion.latitude;
-            double longitude = miPosicion.longitude;
+            double latitude = posicionUsuarioActual.latitude;
+            double longitude = posicionUsuarioActual.longitude;
             if (!(latitude == 0 && longitude == 0))
             {
                 List<Address> addresses;
@@ -172,9 +176,9 @@ public class mapaAutoActivity extends AppCompatActivity implements botonesFragme
                     MarcadorPosicionUsuario.remove();
                 }
 
-                MarcadorPosicionUsuario=mMap.addMarker(new MarkerOptions().position(miPosicion).title("Ud esta aquí"));
+                MarcadorPosicionUsuario=mMap.addMarker(new MarkerOptions().position(posicionUsuarioActual).title("Ud esta aquí"));
                 // Llama a la función que calculará la ruta
-                obtenerRuta(miPosicion, posicion);
+                obtenerRuta(posicionUsuarioActual, posicionAuto);
 
             }
         }
@@ -189,6 +193,7 @@ public class mapaAutoActivity extends AppCompatActivity implements botonesFragme
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.clear();
         editor.commit();
+        stopService(s);
         this.finish();
         //vuelvo a I
     }
@@ -246,8 +251,9 @@ public class mapaAutoActivity extends AppCompatActivity implements botonesFragme
                 recorrido.color(Color.RED);
 
                 recorrido.addAll(lista_ruta);
-
-                mMap.addPolyline(recorrido);
+                if (ruta!= null)
+                    ruta.remove();
+                 ruta = mMap.addPolyline(recorrido);
             }
             else {
                 Log.d("DIRECTION!", status);

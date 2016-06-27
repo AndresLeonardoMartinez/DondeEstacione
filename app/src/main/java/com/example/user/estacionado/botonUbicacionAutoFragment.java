@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.android.multidex.estacionado.R;
 import com.google.android.gms.plus.PlusOneButton;
 
 public class botonUbicacionAutoFragment extends Fragment {

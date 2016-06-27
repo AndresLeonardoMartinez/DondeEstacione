@@ -6,7 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+import com.example.android.multidex.estacionado.R;
 import java.util.Timer;
 import java.util.TimerTask;
 
