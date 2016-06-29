@@ -1,5 +1,7 @@
 package com.example.user.estacionado;
+
 import com.example.android.multidex.estacionado.R;
+import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,71 +15,62 @@ import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
-
 import com.google.android.gms.maps.model.LatLng;
 
 public class GuardarPosicionAutoActivity extends AppCompatActivity implements BotonUbicacionAutoFragment.OnFragmentInteractionListener {
     private PosicionGPSService mService;
-    LatLng posicion;
-    public static final String MyPREFERENCES = "MyPrefs" ;
-    public static final String ubicacionLatitud = "latKEY";
-    public static final String ubicacionLongitud = "longKEY";
+    public String ubicacionLatitud=null;
+    public String ubicacionLongitud=null;
     private Intent s;
-    private int cont;
-    private boolean resu;
     SharedPreferences sharedpreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.guardarposautolayout);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
-
+        sharedpreferences = getSharedPreferences(getString(R.string.MyPREFERENCES), Context.MODE_PRIVATE);
+        ubicacionLatitud = getString(R.string.ubicacionLatitud);
+        ubicacionLongitud = getString(R.string.ubicacionLongitud);
     }
+
     private void metodoInicial(){
-        //creamos el servicio
         s = new Intent(this,PosicionGPSService.class);
         startService(s);
-        //nos bindeamos al servicio para acceder al metodo que nos provee la ubicacion
         bindService(s, mConnection, Context.BIND_AUTO_CREATE);
     }
+
     public void guardar(){
-         resu=guardarPosicionAuto(); //invoca al metodo que invoca al metodo del servicio
-        Log.d("prueba", "MainActivity.guardar() antes de matar el servicio");
-        //this.finish();
+        boolean resu = guardarPosicionAuto();
         if(resu) {
-            //unbind?
             unbindService(mConnection);
-            stopService(s); //termino el servicio
+            stopService(s);
             this.finish();
         }
     }
+
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get
-            // LocalService instance
             PosicionGPSService.LocalBinder binder = (PosicionGPSService.LocalBinder) service;
             mService = binder.getService();
             Button botonGuardar = (Button) findViewById(R.id.botonGuardar);
-            botonGuardar.setEnabled(true);
+            if (botonGuardar != null) {
+                botonGuardar.setEnabled(true);
+            }
         }
 
         @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-        }
+        public void onServiceDisconnected(ComponentName arg0){}
     };
+
+    @SuppressLint("CommitPrefEdits")
     private boolean guardarPosicionAuto (){
-        posicion = mService.mostrar();
+        LatLng posicion = mService.mostrar();
         SharedPreferences.Editor editor = sharedpreferences.edit();
-        //guardamos la posicion mediante shared preferences
         if (posicion != null && !(posicion.latitude==0 && posicion.longitude==0)){
-            editor.clear(); //limpio lo viejo
-            //editor.putFloat("latKEY",(float) posicion.latitude);
-            //editor.putFloat("longKEY",(float) posicion.longitude);
+            editor.clear();
             double latitud = posicion.latitude;
             double longitud = posicion.longitude;
             editor.putString(ubicacionLatitud,latitud+"");
@@ -95,34 +88,30 @@ public class GuardarPosicionAutoActivity extends AppCompatActivity implements Bo
                     });
             final AlertDialog alert = builder.create();
             alert.show();
-            Log.d("prueba", "MainActivity.guardarPosicionAuto(): DENTRO DEL ELSE");
-            editor.putString(ubicacionLatitud, "0");
-            editor.putString(ubicacionLongitud, "0");
-            editor.commit();
-            Log.d("prueba", "MainActivity.guardarPosicionAuto(): shared preferences 0 0");
+            //editor.putString(ubicacionLatitud, "0");
+            //editor.putString(ubicacionLongitud, "0");
+            //editor.commit();
             return false;
         }
     }
+
     @Override
     protected void onResume(){
         super.onResume();
         EnableGPSIfPossible();
         metodoInicial();
-
     }
+
     @Override
     protected void onRestart(){
-
         super.onRestart();
     }
+
     @Override
     protected void onStop(){
         super.onStop();
-//        unbindService(mConnection);
-        stopService(s); //termino el servicio
+        stopService(s);
     }
-
-
 
     private void EnableGPSIfPossible(){
         final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
@@ -130,6 +119,7 @@ public class GuardarPosicionAutoActivity extends AppCompatActivity implements Bo
             buildAlertMessageNoGps();
         }
     }
+
     private  void buildAlertMessageNoGps() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(getString(R.string.AlertaNoGPSMsg))
@@ -148,7 +138,6 @@ public class GuardarPosicionAutoActivity extends AppCompatActivity implements Bo
         alert.show();
     }
 
-
     public void onBackPressed(){
         super.onBackPressed();
         onStop();
@@ -156,7 +145,6 @@ public class GuardarPosicionAutoActivity extends AppCompatActivity implements Bo
 
     @Override
     public void guardarPosicion() {
-
         guardar();
     }
 }

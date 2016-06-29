@@ -1,12 +1,12 @@
 package com.example.user.estacionado;
 
+import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
@@ -14,10 +14,10 @@ import android.location.LocationManager;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -38,64 +38,62 @@ import com.akexorcist.googledirection.DirectionCallback;
 import com.akexorcist.googledirection.GoogleDirection;
 import com.akexorcist.googledirection.constant.RequestResult;
 import com.example.android.multidex.estacionado.R;
-
-
-
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 
 public class MapaAutoActivity extends AppCompatActivity implements BotonesFragment.OnFragmentInteractionListener, OnMapReadyCallback {
-    private PolylineOptions recorrido;
-    ArrayList lista_ruta = new ArrayList();
     private GoogleMap mMap;
     SharedPreferences sharedpreferences;
     private Intent s;
-    private Fragment F;
     private PosicionGPSService mService;
     private LatLng posicionAuto;
     private Marker marcadorPosicionUsuario;
     private Polyline ruta;
-    public static final String MyPREFERENCES = "MyPrefs" ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_fragmento_actividad2);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        setContentView(R.layout.mapa_layout);
 
-        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
-        //mapa
+        sharedpreferences = getSharedPreferences(getString(R.string.MyPREFERENCES), Context.MODE_PRIVATE);
+
+        Fragment newFragment = BotonesFragment.newInstance();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.add(R.id.fragmento_boton_nuevo_estacionamiento, newFragment).commit();
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.mapa);
         mapFragment.getMapAsync(this);
+
     }
+
+    @Override
+    protected void onRestart() {
+        Fragment newFragment = BotonesFragment.newInstance();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.add(R.id.fragmento_boton_nuevo_estacionamiento, newFragment).commitAllowingStateLoss();
+        super.onRestart();
+    }
+
     private void metodoInicial(){
         Intent i = getIntent();
-        double lat = i.getDoubleExtra("latitud",0);
-        double longi= i.getDoubleExtra("longitud",0);
+        double lat = i.getDoubleExtra(getString(R.string.latitud), 0);
+        double longi= i.getDoubleExtra(getString(R.string.longitud), 0);
         posicionAuto = new LatLng(lat,longi);
-        //indico en el mapa la pos del auto
-        //MostrarPosicionAuto();
-        Log.d("prueba", "A2.metodoInicial(): intent lat: "+lat);
-        Log.d("prueba", "A2.metodoInicial(): intent longi: " + longi);
-        //creo y me bindeo para acceder al metodo mostrar del servicio
         s = new Intent(this,PosicionGPSService.class);
         startService(s);
         bindService(s, mConnection, Context.BIND_AUTO_CREATE);
     }
-    private ServiceConnection mConnection = new ServiceConnection() {
 
+    private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get
-            // LocalService instance
             PosicionGPSService.LocalBinder binder = (PosicionGPSService.LocalBinder) service;
             mService = binder.getService();
         }
-
         @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-        }
+        public void onServiceDisconnected(ComponentName arg0) {}
     };
 
     @Override
@@ -103,13 +101,11 @@ public class MapaAutoActivity extends AppCompatActivity implements BotonesFragme
         super.onResume();
         EnableGPSIfPossible();
         metodoInicial();
-
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        //unbindService(mConnection);
         stopService(s);
     }
 
@@ -123,71 +119,37 @@ public class MapaAutoActivity extends AppCompatActivity implements BotonesFragme
             addresses = geocoder.getFromLocation(latitudeAuto, longitudeAuto,1);
             if(addresses != null && addresses.size() > 0 ){
                 Address address = addresses.get(0);
-                addressText = String.format("%s",
-                        address.getMaxAddressLineIndex() > 0 ? address.getAddressLine(0) : "");
+                addressText = String.format("%s", address.getMaxAddressLineIndex() > 0 ? address.getAddressLine(0) : "");
+
             }
         }
         catch (IOException e) {
             e.printStackTrace();
         }
-        Log.i("prueba", "addressText " + addressText);
         mMap.addMarker(new MarkerOptions()
                         .position(posicionAuto).
                                 title(getString(R.string.posicionActual) + addressText)
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.auto_icono))
         );
-
-
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posicionAuto, 15));
     }
 
     @Override public void mostrarPosicion() {
-        //obtenemos posicion actual
-        //preguntamos por gps
-
-
         if (mService != null && mMap!=null) {
             LatLng posicionUsuarioActual = mService.mostrar();
-            Geocoder geocoder = new Geocoder(this);
             double latitude = posicionUsuarioActual.latitude;
             double longitude = posicionUsuarioActual.longitude;
-            if (!(latitude == 0 && longitude == 0))
-            {
-
-                // DEBUG:
-                //posicionAuto = new LatLng(-38.718318, -62.266348);
-                //posicionUsuarioActual = new LatLng(-38.716598, -62.255606);
-
-                List<Address> addresses;
-                String addressText="";
-                try {
-                    addresses = geocoder.getFromLocation(latitude, longitude,1);
-                    if(addresses != null && addresses.size() > 0 ){
-                        Address address = addresses.get(0);
-                        addressText = String.format("%s",
-                                address.getMaxAddressLineIndex() > 0 ? address.getAddressLine(0) : "");
-                    }
-                }
-                catch (IOException e) {
-                    e.printStackTrace();
-                }
-                Log.i("prueba", "addressText " + addressText);
-                //eliminamos la marca anterior para actualizar la pos del usuario
-                if ( marcadorPosicionUsuario != null ) {
+            if (!(latitude == 0 && longitude == 0)){
+                if ( marcadorPosicionUsuario != null ){
                     marcadorPosicionUsuario.remove();
                 }
-
                 marcadorPosicionUsuario =mMap.addMarker(new MarkerOptions().position(posicionUsuarioActual).title(getString(R.string.posicionUsuario)));
-                // Llama a la función que calculará la ruta
                 obtenerRuta(posicionUsuarioActual, posicionAuto);
-
             }
         }
-        else
-        {
-            Log.d("prueba", "El servicio es nulo o el mapa aun no fue creado");
-        }
-
     }
+
+    @SuppressLint("CommitPrefEdits")
     @Override
     public void NuevaPosicion() {
         SharedPreferences.Editor editor = sharedpreferences.edit();
@@ -196,19 +158,13 @@ public class MapaAutoActivity extends AppCompatActivity implements BotonesFragme
         unbindService(mConnection);
         stopService(s);
         this.finish();
-        //vuelvo a I
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        LatLng BahiaBlanca = new LatLng(-38.7167, -62.2833);
         mMap = googleMap;
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(BahiaBlanca,12));
         MostrarPosicionAuto();
-        Log.d("MAPA", "ONmapReady");
     }
-
-
 
     private void EnableGPSIfPossible(){
         final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
@@ -216,16 +172,17 @@ public class MapaAutoActivity extends AppCompatActivity implements BotonesFragme
             buildAlertMessageNoGps();
         }
     }
-    private  void buildAlertMessageNoGps() {
+
+    private void buildAlertMessageNoGps(){
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Es necesario tener activado el GPS para usar la aplicación. ¿Desea activarlo?")
+        builder.setMessage(getString(R.string.AlertaNoGPSMsg))
                 .setCancelable(false)
-                .setPositiveButton("Sí", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.AlertaNoGPSBtnSi), new DialogInterface.OnClickListener() {
                     public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                         startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                     }
                 })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getString(R.string.AlertaNoGPSBtnNo), new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                         dialog.cancel();
                     }
@@ -233,45 +190,30 @@ public class MapaAutoActivity extends AppCompatActivity implements BotonesFragme
         final AlertDialog alert = builder.create();
         alert.show();
     }
-    private DirectionCallback retornoObtenerRuta = new DirectionCallback()
-    {
+
+    @SuppressWarnings("unchecked")
+    private DirectionCallback retornoObtenerRuta = new DirectionCallback(){
         @Override
         public void onDirectionSuccess(Direction direction, String rawBody) {
-            Log.d("DIRECTION!", "Volvio con exito.");
             String status = direction.getStatus();
             if(status.equals(RequestResult.OK)) {
-                Log.d("DIRECTION!", "Ruta OK.");
-
                 Route route = direction.getRouteList().get(0);
                 Leg leg = route.getLegList().get(0);
-
-                lista_ruta = leg.getSectionPoint();
-
-                ///Ruta:
-                recorrido = new PolylineOptions();
+                ArrayList lista_ruta = leg.getSectionPoint();
+                PolylineOptions recorrido = new PolylineOptions();
                 recorrido.color(Color.RED);
-
                 recorrido.addAll(lista_ruta);
                 if (ruta!= null)
                     ruta.remove();
                  ruta = mMap.addPolyline(recorrido);
             }
-            else {
-                Log.d("DIRECTION!", status);
-
-
-            }
         }
 
         @Override
-        public void onDirectionFailure(Throwable t) {
-
-            Log.d("DIRECTION!", "Volvio fallando");
-        }
+        public void onDirectionFailure(Throwable t){}
     };
 
     private ArrayList obtenerRuta(LatLng inicio, LatLng destino) {
-
         ArrayList lista_ruta = new ArrayList();
         String serverKey;
         serverKey = getString(R.string.google_maps_direction_server_key);
@@ -280,8 +222,6 @@ public class MapaAutoActivity extends AppCompatActivity implements BotonesFragme
                 .to(destino)
                 .transportMode(TransportMode.WALKING)
                 .execute(retornoObtenerRuta);
-
         return lista_ruta;
     }
-
 }

@@ -4,58 +4,42 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.content.SharedPreferences;
-
 import com.example.android.multidex.estacionado.R;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+
 
 public class IniciarActivity extends AppCompatActivity {
-    public static final String MyPREFERENCES = "MyPrefs" ;
-   // public static final String BORRADOR = "BORRADOR" ;
 
-    public static final String ubicacionLatitud = "latKEY";
-    public static final String ubicacionLongitud = "longKEY";
+    public String ubicacionLatitud=null;
+    public String ubicacionLongitud=null;
     SharedPreferences sharedpreferences;
-
-    //SharedPreferences sharedpreferences2;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.iniciar_layout);
-        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+
+        ubicacionLatitud = getString(R.string.ubicacionLatitud);
+        ubicacionLongitud = getString(R.string.ubicacionLongitud);
+        sharedpreferences = getSharedPreferences(getString(R.string.MyPREFERENCES), Context.MODE_PRIVATE);
 
     }
     private void verificacion () {
-        //verificar si el gps esta activado
-        //verificar si existe posicion
-        //prueba
         double latitud;
         double longitud;
         latitud = Double.parseDouble(sharedpreferences.getString(ubicacionLatitud,"0"));
         longitud = Double.parseDouble(sharedpreferences.getString(ubicacionLongitud, "0"));
-//        Log.d("prueba", "valor shared latitud " + latitud);
-      //  Log.d("prueba", "valor shared longitud " + longitud);
-        Log.d("prueba", "iniciar.verificacion(): antes del if");
-        if (((latitud == 0 && longitud==0) )) //|| borrar== 1)) //no existe una ubicacion previa
-        {
+        if (latitud == 0 && longitud==0){
             Intent i;
-            Log.d("prueba", "iniciar.verificacion(): desde Inicial voy a lanzar act1");
             i = new Intent(this,GuardarPosicionAutoActivity.class);
             startActivity(i);
         }
-        else //existe ubicacion
-        {
+        else{ //existe ubicacion
             Intent i;
-            Log.d("prueba", "iniciar.verificacion(): desde Inicial voy a lanzar act2");
             i = new Intent(this, MapaAutoActivity.class);
-            i.putExtra("latitud",latitud);
-            i.putExtra("longitud",longitud);
-           // Log.d("prueba", "INICIAR inicia A2 con latitud" + latitud);
-          //  Log.d("prueba", "INICIAR inicia A2 con longitud" + longitud);
+            i.putExtra(getString(R.string.latitud),latitud);
+            i.putExtra(getString(R.string.longitud),longitud);
             startActivity(i);
-
         }
     }
 
@@ -65,5 +49,4 @@ public class IniciarActivity extends AppCompatActivity {
         super.onResume();
         verificacion();
     }
-
 }

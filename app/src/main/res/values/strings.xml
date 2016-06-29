@@ -23,6 +23,13 @@
     <string name="AlertaNoGPSMsg">Es necesario tener activado el GPS para usar la aplicación. ¿Desea activarlo?</string>
     <string name="AlertaNoGPSBtnSi">Si</string>
     <string name="AlertaNoGPSBtnNo">No</string>
+    <string name="MyPREFERENCES">MyPrefs</string>
+    <string name="ubicacionLatitud">latKEY</string>
+    <string name="ubicacionLongitud">longKEY</string>
+    <string name="longitud">longitud</string>
+    <string name="latitud">latitud</string>
+
+
 
 
 </resources>

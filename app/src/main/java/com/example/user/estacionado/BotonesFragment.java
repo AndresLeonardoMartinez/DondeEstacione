@@ -10,20 +10,15 @@ import com.example.android.multidex.estacionado.R;
 import java.util.Timer;
 import java.util.TimerTask;
 
+
 public class BotonesFragment extends Fragment {
-    private View v;
     private OnFragmentInteractionListener mListener;
     private Timer timer;
 
-    public BotonesFragment() {
-        // Required empty public constructor
-    }
+    public BotonesFragment() {}
 
-
-    public static BotonesFragment newInstance(String param1, String param2) {
-        BotonesFragment fragment = new BotonesFragment();
-        Bundle args = new Bundle();
-        return fragment;
+    public static BotonesFragment newInstance() {
+        return new BotonesFragment();
     }
 
     public void mostrarPosicionFragment(){
@@ -35,44 +30,30 @@ public class BotonesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        v = inflater.inflate(R.layout.fragment_blank, container, false);
-
-
-        //funcion del timer
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_nuevo_estacionamiento, container, false);
         timer = new Timer();
         TimerTask t1 = new TimerTask() {
-
             @Override
             public void run() {
-                getActivity().runOnUiThread(new Runnable()
-                {
-                    public void run()
-                    {
-                        //update ui
-                        mostrarPosicionFragment();
-
+                getActivity().runOnUiThread(new Runnable(){
+                    public void run(){
+                       mostrarPosicionFragment();
                     }
                 });
             }
         };
-        timer.schedule(t1,0,5000);
-
+        timer.schedule(t1,0,6000);
         v.findViewById(R.id.nuevaPos).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 NuevaPosicionFragment();
             }
         });
-
         return v;
-
     }
 
     public void NuevaPosicionFragment(){
@@ -81,39 +62,30 @@ public class BotonesFragment extends Fragment {
         }
     }
 
-
-
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+            throw new RuntimeException(context.toString()+ " must implement OnFragmentInteractionListener");
         }
     }
 
     @Override
-    public void onDetach() {
+    public void onDetach(){
         super.onDetach();
         mListener = null;
     }
 
-
-
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void mostrarPosicion();
         void NuevaPosicion();
     }
 
     @Override
     public void onPause(){
-        //debemos detener el timer
         super.onPause();
         timer.cancel();
-
     }
 }
